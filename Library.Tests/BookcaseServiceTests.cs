@@ -111,7 +111,7 @@ public class BookcaseServiceTests
         var availableBookCopies = _bookcaseService.GetAllBookCopies("9781853260001");
 
         // Assert
-        // Verify that the method returns the expected available book copies.
+        // Verify that the method returns the expected available book copies
         Assert.AreEqual(availableCopies, availableBookCopies.Count);
         Assert.IsTrue(availableBookCopies.All(copy => !copy.IsBorrowed));
     }
@@ -145,11 +145,11 @@ public class BookcaseServiceTests
         _bookcaseService.BorrowBook("9781853260001");
 
         // Assert
-        // Verify that a book copy was successfully borrowed.
+        // Verify that a book copy was successfully borrowed
         var availableBookCopies = _bookcaseService.GetAllBookCopies("9781853260001");
 
         // Assert
-        // Verify that the method returns the expected available book copies.
+        // Verify that the method returns the expected available book copies
         Assert.AreEqual(availableCopies-1, availableBookCopies.Count);
     }
 
@@ -198,15 +198,15 @@ public class BookcaseServiceTests
 
         if (differenceInDays > 14)
         {
-            // Calculate the expected total amount based on the difference in days and rental price.
+            // Calculate the expected total amount based on the difference in days and rental price
             var expectedTotalAmount = book.RentalPrice + (differenceInDays - 14) * (_percentage * book.RentalPrice);
 
-            // Assert that the calculated total amount matches the expected total amount.
+            // Assert that the calculated total amount matches the expected total amount
             Assert.AreEqual(expectedTotalAmount, totalAmount);
         }
         else
         {
-            // The difference in days is not greater than 14, so the total amount should be equal to the book's rental price.
+            // The difference in days is not greater than 14, so the total amount should be equal to the book's rental price
             Assert.AreEqual(book.RentalPrice, totalAmount);
         }
     }
