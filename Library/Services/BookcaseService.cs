@@ -18,7 +18,11 @@ public class BookcaseService
         }
         _bookcase.Books.Add(book);
         Console.WriteLine("Book added successfully and the book copies with ids: ");
-        foreach( var bookCopy in book.BookCopies) { Console.WriteLine($" {bookCopy.Id} "); }
+
+        foreach( var bookCopy in book.BookCopies) 
+        {
+            Console.WriteLine($" {bookCopy.Id} "); 
+        }
     }
 
     public List<Book> GetAllBooks()

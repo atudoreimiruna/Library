@@ -168,7 +168,7 @@ public class BookcaseServiceTests
     }
 
     [Test]
-    public void ReturnBook_Should_ReturnBookCopy()
+    public void ReturnBook_Should_ReturnBookCopy([Values(20, 25, 30)] int numberOfDays)
     {
         // Arrange 
         var book = new Book { Title = "Pride and Prejudice", ISBN = "9781853260001", RentalPrice = 26.0 };
@@ -182,7 +182,7 @@ public class BookcaseServiceTests
 
         // Mock DateTime using Moq
         var mockDateTime = new Mock<IDateTimeProvider>();
-        mockDateTime.SetupGet(dt => dt.Now).Returns(DateTime.Now.AddDays(20));
+        mockDateTime.SetupGet(dt => dt.Now).Returns(DateTime.Now.AddDays(numberOfDays));
 
         // Replace the DateTime provider in the service with the mocked one
         _bookcaseService.DateTimeProvider = mockDateTime.Object;
@@ -194,7 +194,7 @@ public class BookcaseServiceTests
         var returnedCopy = book.BookCopies[0];
         Assert.IsFalse(returnedCopy.IsBorrowed); // Check if the book copy is no longer borrowed
 
-        var differenceInDays = 20;
+        var differenceInDays = numberOfDays;
 
         if (differenceInDays > 14)
         {
