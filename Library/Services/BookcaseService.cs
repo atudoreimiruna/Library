@@ -7,7 +7,21 @@ public class BookcaseService
 {
     private readonly Bookcase _bookcase = new();
     private readonly double _percentage = 0.01;
-    public IDateTimeProvider DateTimeProvider { get; set; } = new DateTimeProvider();
+
+    private IDateTimeProvider DateTimeProvider { get; set; } = new DateTimeProvider();
+    private IFees Fees { get; set; }
+
+    public BookcaseService()
+    {
+        if (DateTime.Today.DayOfWeek == DayOfWeek.Tuesday)
+        {
+            Fees = new DicountedFeesService();
+        }
+        else
+        {
+            Fees = new FeesService();
+        }
+    }
 
     public void AddBook(Book book, int bookCopies)
     {
@@ -19,8 +33,8 @@ public class BookcaseService
         _bookcase.Books.Add(book);
         Console.WriteLine("Book added successfully and the book copies with ids: ");
 
-        foreach( var bookCopy in book.BookCopies) 
-        {
+        foreach( var bookCopy in book.BookCopies)
+        { 
             Console.WriteLine($" {bookCopy.Id} "); 
         }
     }
@@ -93,7 +107,6 @@ public class BookcaseService
 
     public double ReturnBook(Guid id)
     {
-        double totalAmount = 0.0;
         var borrowedBook = _bookcase.Books
             .FirstOrDefault(x => x.BookCopies
             .Any(x => x.Id == id));
@@ -104,24 +117,14 @@ public class BookcaseService
         if (borrowedBookCopy == null)
         {
             Console.WriteLine("Book copy not found.");
-            return totalAmount;
+            return 0.0;
         }
 
-        var currentDate = DateTimeProvider.Now; // Use DateTimeProvider.Now
-        var differenceInDays = (currentDate - borrowedBookCopy.BorrowDate).Days;
+        var currentDate = DateTime.Today;
+        double totalAmount = 0.0;
 
-        Console.WriteLine($"The book copy has been borrowed for {differenceInDays} days.");
-
-        if (differenceInDays > 14)
-        {
-            totalAmount = borrowedBook.RentalPrice + (differenceInDays - 14) * (_percentage * borrowedBook.RentalPrice);
-            Console.WriteLine($"You passed the limit of 14 days, with {differenceInDays - 14} more days, so you have to pay {totalAmount}.");
-        }
-        else
-        {
-            totalAmount = borrowedBook.RentalPrice;
-            Console.WriteLine($"You have to pay {borrowedBook.RentalPrice}.");
-        }
+        totalAmount = Fees.CalculateTotalAmount(borrowedBookCopy.BorrowDate, borrowedBook.RentalPrice);
+      
         borrowedBookCopy.IsBorrowed = false;
         return totalAmount;
     }
